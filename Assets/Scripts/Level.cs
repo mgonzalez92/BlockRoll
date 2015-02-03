@@ -28,14 +28,20 @@ public class Level : MonoBehaviour {
 		off = Resources.Load<Material> ("Textures/off");
 	}
 
-	// Change from the main menu to the level select
-	public void LevelSelect() {
+	// Changr from the main menu to the level pack select
+	public void PackSelect() {
 		transform.Find ("Main Menu").gameObject.SetActive (false);
+		transform.Find ("Pack Select").gameObject.SetActive (true);
+	}
+
+	// Change from the level pack select to the level select
+	public void LevelSelect(int wrldNum) {
+		worldNum = wrldNum;
+		transform.Find ("Pack Select").gameObject.SetActive (false);
 		transform.Find ("Level Select").gameObject.SetActive (true);
 	}
 
 	public void StartGame(int lvlNum) {
-		worldNum = 1;
 		levelNum = lvlNum;
 		transform.Find ("Level Select").gameObject.SetActive (false);
 		LoadLevel ("Levels/level" + worldNum.ToString() + "-" + levelNum.ToString());
@@ -66,10 +72,17 @@ public class Level : MonoBehaviour {
 					else if (level[x,y] == 'e')
 						tiles[x,y].renderer.material = end;
 					else if (level[x,y] == 's') {
-						player = (GameObject)Instantiate(Resources.Load ("Prefabs/Cube"), new Vector3(x, 0.5f, -y), Quaternion.identity);
+						if (worldNum == 1) {
+							player = (GameObject)Instantiate(Resources.Load ("Prefabs/Cube"), new Vector3(x, 0.5f, -y), Quaternion.identity);
+						} 
+						else if (worldNum == 2) {
+							player = (GameObject)Instantiate(Resources.Load ("Prefabs/Long"), new Vector3(x, 1.0f, -y), Quaternion.identity);
+						}
 						var play = player.GetComponent<PlayerController> ();
 						start = new Vector2(x, y);
 						play.place = start;
+						play.type = worldNum;
+						play.orientation = 0;
 						tiles[x,y].renderer.material = off;
 					}
 				}
@@ -89,7 +102,13 @@ public class Level : MonoBehaviour {
 
 		var play = player.GetComponent<PlayerController> ();
 		play.place = start;
-		player.transform.position = new Vector3(start.x, 0.5f, -start.y);
+		if (worldNum == 1) {
+			player.transform.position = new Vector3(start.x, 0.5f, -start.y);
+		} else if (worldNum == 2) {
+			player.transform.position = new Vector3(start.x, 1.0f, -start.y);
+			player.transform.rotation = Quaternion.identity;
+		}
+		play.orientation = 0;
 		play.isFalling = false;
 		play.fall = 0;
 	}
@@ -102,26 +121,47 @@ public class Level : MonoBehaviour {
 			play.PlayerUpdate();
 
 			// If player has fallen off the edge
-			if (play.place.x < 0 || play.place.x >= level.GetLength(0) ||
-			    play.place.y < 0 || play.place.y >= level.GetLength(1) ||
-			    !play.isRotating && level[(int)play.place.x, (int)play.place.y] == '.') {
-				play.isFalling = true;
-			}
-			// If player has reached the exit
-			else if (!play.isRotating && level[(int)play.place.x, (int)play.place.y] == 'e') {
-				ReloadLevel();
-			}
-			// When player reaches a new tile
-			else if (play.isArrived) {
-				// If it was a blank tile
-				if (level[(int)play.place.x, (int)play.place.y] == 'x') {
-					level[(int)play.place.x, (int)play.place.y] = '-';
-					tiles[(int)play.place.x, (int)play.place.y].renderer.material = off;
+			if (play.isArrived) {
+				// Square block
+				if (play.type == 1 &&
+				   (play.place.x < 0 || play.place.x >= level.GetLength(0) ||
+				    play.place.y < 0 || play.place.y >= level.GetLength(1) ||
+				    level[(int)play.place.x, (int)play.place.y] == '.')) {
+					play.isFalling = true;
+				} // Long block
+				else if (play.type == 2 && (play.orientation == 0 &&
+				        	(play.place.x < 0 || play.place.x >= level.GetLength(0) ||
+				 		 	play.place.y < 0 || play.place.y >= level.GetLength(1) ||
+				 		 	level[(int)play.place.x, (int)play.place.y] == '.')) ||
+				        (play.orientation == 1 &&
+				        	(play.place.x < 0 || play.place.x >= level.GetLength(0) - 1 ||
+				 			play.place.y < 0 || play.place.y >= level.GetLength(1) ||
+				 			level[(int)play.place.x, (int)play.place.y] == '.' ||
+				 			level[(int)play.place.x + 1, (int)play.place.y] == '.')) ||
+				        (play.orientation == 2 &&
+							(play.place.x < 0 || play.place.x >= level.GetLength(0) ||
+							play.place.y < 1 || play.place.y >= level.GetLength(1) ||
+							level[(int)play.place.x, (int)play.place.y] == '.' ||
+							level[(int)play.place.x, (int)play.place.y - 1] == '.'))) {
+					play.isFalling = true;
 				}
-				// If it was a used tile
-				else if (level[(int)play.place.x, (int)play.place.y] == '-' ||
-				         level[(int)play.place.x, (int)play.place.y] == 's') {
+				// If player has reached the exit
+				else if ((play.type == 1 || play.type == 2 && play.orientation == 0) &&
+				         level[(int)play.place.x, (int)play.place.y] == 'e') {
 					ReloadLevel();
+				}
+				// When player reaches a new tile
+				else if (play.type == 1) {
+					// If it was a blank tile
+					if (level[(int)play.place.x, (int)play.place.y] == 'x') {
+						level[(int)play.place.x, (int)play.place.y] = '-';
+						tiles[(int)play.place.x, (int)play.place.y].renderer.material = off;
+					}
+					// If it was a used tile
+					else if (level[(int)play.place.x, (int)play.place.y] == '-' ||
+					         level[(int)play.place.x, (int)play.place.y] == 's') {
+						ReloadLevel();
+					}
 				}
 			}
 
@@ -180,7 +220,8 @@ public class Level : MonoBehaviour {
 	}
 
 	public void NextLevel() {
-		if (levelNum < 4) {
+		if ((worldNum == 1 && levelNum < 4) ||
+		    (worldNum == 2 && levelNum < 8)) {
 			// Destroy game objects
 			Destroy (player);
 			for (int y = 0; y < tiles.GetLength(1); y++) {

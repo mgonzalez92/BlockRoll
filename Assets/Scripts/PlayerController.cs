@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour {
 	public Vector2 place;
 	public bool isFalling = false;
 	public float fall;
+	public int orientation;
+	public int type;
 
 	// Previous game states
 	private float prevX = 0;
@@ -41,31 +43,107 @@ public class PlayerController : MonoBehaviour {
 			isArrived = false;
 		} else {
 			if (moveY > 0 && prevY <= 0) {
-				focus = transform.position + new Vector3 (0f, -0.5f, 0.5f);
-				axis = Vector3.right;
-				isRotating = true;
-				place.y -= 1;
+				Move (0);
 			} else if (moveY < 0  && prevY >= 0) {
-				focus = transform.position + new Vector3 (0f, -0.5f, -0.5f);
-				axis = Vector3.left;
-				isRotating = true;
-				place.y += 1;
+				Move (1);
 			} else if (moveX > 0  && prevX <= 0) {
-				focus = transform.position + new Vector3 (0.5f, -0.5f, 0f);
-				axis = Vector3.back;
-				isRotating = true;
-				place.x += 1;
+				Move (2);
 			} else if (moveX < 0 && prevX >= 0) {
-				focus = transform.position + new Vector3 (-0.5f, -0.5f, 0f);
-				axis = Vector3.forward;
-				isRotating = true;
-				place.x -= 1;
+				Move (3);
 			}
 			isArrived = false;
 		}
 
 		prevX = moveX;
 		prevY = moveY;
+	}
+
+	void Move(int direction) {
+		float focusX = 0.5f;
+		float focusY = 0.5f;
+		float focusZ = 0.5f;
+
+		// Long block
+		if (type == 2) {
+			// Straight up
+			if (orientation == 0)
+				focusY = 1.0f;
+			// Along X
+			else if (orientation == 1)
+				focusX = 1.0f;
+			// Along Z
+			else if (orientation == 2)
+				focusZ = 1.0f;
+		}
+		if (direction == 0) {
+			focus = transform.position + new Vector3 (0f, -focusY, focusZ);
+			axis = Vector3.right;
+			if (type == 1)
+				place.y -= 1;
+			else if (type == 2) {
+				if (orientation == 0) {
+					place.y -= 1;
+					orientation = 2;
+				} else if (orientation == 1) {
+					place.y -= 1;
+				} else if (orientation == 2) {
+					place.y -= 2;
+					orientation = 0;
+				}
+			}
+		}
+		else if (direction == 1) {
+			focus = transform.position + new Vector3 (0f, -focusY, -focusZ);
+			axis = Vector3.left;
+			if (type == 1)
+				place.y += 1;
+			else if (type == 2) {
+				if (orientation == 0) {
+					place.y += 2;
+					orientation = 2;
+				} else if (orientation == 1) {
+					place.y += 1;
+				} else if (orientation == 2) {
+					place.y += 1;
+					orientation = 0;
+				}
+			}
+		}
+		else if (direction == 2) {
+			focus = transform.position + new Vector3 (focusX, -focusY, 0f);
+			axis = Vector3.back;
+			if (type == 1)
+				place.x += 1;
+			else if (type == 2) {
+				if (orientation == 0) {
+					place.x += 1;
+					orientation = 1;
+				} else if (orientation == 1) {
+					place.x += 2;
+					orientation = 0;
+				} else if (orientation == 2) {
+					place.x += 1;
+				}
+			}
+		}
+		else {
+			focus = transform.position + new Vector3 (-focusX, -focusY, 0f);
+			axis = Vector3.forward;
+			if (type == 1)
+				place.x -= 1;
+			else if (type == 2) {
+				if (orientation == 0) {
+					place.x -= 2;
+					orientation = 1;
+				} else if (orientation == 1) {
+					place.x -= 1;
+					orientation = 0;
+				} else if (orientation == 2) {
+					place.x -= 1;
+				}
+			}
+		}
+		isRotating = true;
 	}
 
 	void Rotate() {
