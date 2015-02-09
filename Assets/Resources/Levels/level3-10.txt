@@ -1,0 +1,10 @@
+8
+xxx........
+xsx.xxx....
+xxx.xxx.xxx
+....xxx.xxx
+xxx.....xxx
+xxx.xxx....
+xxx.xxx.xxx
+....xxx.xex
+........xxx

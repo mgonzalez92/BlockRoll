@@ -1,5 +1,6 @@
-xxx...
-xsxx..
-xxxx.e
-...xxx
-...xxx
+6
+.xxx.
+xxxxe
+xx.xx
+sxxxx
+.xxx.

@@ -18,6 +18,10 @@ public class PlayerController : MonoBehaviour {
 	public int orientation;
 	public int type;
 
+	// Touchstates
+	public Vector2 touchStart;
+	public static float THRESHOLD = 0.05f *  Mathf.Sqrt (Mathf.Pow (Screen.width, 2) + Mathf.Pow (Screen.height, 2));
+
 	// Previous game states
 	private float prevX = 0;
 	private float prevY = 0;
@@ -32,8 +36,33 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void PlayerUpdate () {
+		// Arrow pad
 		float moveX = Input.GetAxis ("Horizontal");
 		float moveY = Input.GetAxis ("Vertical");
+
+		// Touch pad
+		if (Input.touchCount > 0) {
+			Vector2 touchPos = Input.GetTouch(0).position;
+			if (Input.GetTouch(0).phase == TouchPhase.Began) {
+				touchStart = touchPos;
+			} else if (Input.GetTouch(0).phase == TouchPhase.Ended &&
+			         Vector2.Distance(touchStart, touchPos) > THRESHOLD) {
+				float angle = Vector2.Angle (Vector2.right, touchPos-touchStart);
+				if (touchPos.y < touchStart.y) angle = 360 - angle;
+
+				// Determine direction swiped
+				if (angle >= 60 && angle < 150)
+					moveY = 1;
+				else if (angle >= 150 && angle < 240)
+					moveX = -1;
+				else if (angle >= 250 && angle < 330)
+					moveY = -1;
+				else
+					moveX = 1;
+
+				touchStart = touchPos;
+			}
+		}
 
 		if (isRotating) {
 			Rotate ();
@@ -74,6 +103,16 @@ public class PlayerController : MonoBehaviour {
 			// Along Z
 			else if (orientation == 2)
 				focusZ = 1.0f;
+		} else if (type == 3) {
+			// Straight up
+			if (orientation == 0)
+				focusY = 1.5f;
+			// Along X
+			else if (orientation == 1)
+				focusX = 1.5f;
+			// Along Z
+			else if (orientation == 2)
+				focusZ = 1.5f;
 		}
 		if (direction == 0) {
 			focus = transform.position + new Vector3 (0f, -focusY, focusZ);
@@ -90,9 +129,18 @@ public class PlayerController : MonoBehaviour {
 					place.y -= 2;
 					orientation = 0;
 				}
+			} else if (type == 3) {
+				if (orientation == 0) {
+					place.y -= 1;
+					orientation = 2;
+				} else if (orientation == 1) {
+					place.y -= 1;
+				} else if (orientation == 2) {
+					place.y -= 3;
+					orientation = 0;
+				}
 			}
-		}
-		else if (direction == 1) {
+		} else if (direction == 1) {
 			focus = transform.position + new Vector3 (0f, -focusY, -focusZ);
 			axis = Vector3.left;
 			if (type == 1)
@@ -107,9 +155,18 @@ public class PlayerController : MonoBehaviour {
 					place.y += 1;
 					orientation = 0;
 				}
+			} else if (type == 3) {
+				if (orientation == 0) {
+					place.y += 3;
+					orientation = 2;
+				} else if (orientation == 1) {
+					place.y += 1;
+				} else if (orientation == 2) {
+					place.y += 1;
+					orientation = 0;
+				}
 			}
-		}
-		else if (direction == 2) {
+		} else if (direction == 2) {
 			focus = transform.position + new Vector3 (focusX, -focusY, 0f);
 			axis = Vector3.back;
 			if (type == 1)
@@ -124,9 +181,18 @@ public class PlayerController : MonoBehaviour {
 				} else if (orientation == 2) {
 					place.x += 1;
 				}
+			} else if (type == 3) {
+				if (orientation == 0) {
+					place.x += 1;
+					orientation = 1;
+				} else if (orientation == 1) {
+					place.x += 3;
+					orientation = 0;
+				} else if (orientation == 2) {
+					place.x += 1;
+				}
 			}
-		}
-		else {
+		} else {
 			focus = transform.position + new Vector3 (-focusX, -focusY, 0f);
 			axis = Vector3.forward;
 			if (type == 1)
@@ -134,6 +200,16 @@ public class PlayerController : MonoBehaviour {
 			else if (type == 2) {
 				if (orientation == 0) {
 					place.x -= 2;
+					orientation = 1;
+				} else if (orientation == 1) {
+					place.x -= 1;
+					orientation = 0;
+				} else if (orientation == 2) {
+					place.x -= 1;
+				}
+			} else if (type == 3) {
+				if (orientation == 0) {
+					place.x -= 3;
 					orientation = 1;
 				} else if (orientation == 1) {
 					place.x -= 1;

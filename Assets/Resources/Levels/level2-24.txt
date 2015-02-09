@@ -1,0 +1,10 @@
+28
+...xxxxxxx....
+...xxxxxxx....
+xxxx.....xxx..
+xxx.......xx..
+xxx.......xx..
+xsx..xxxxxxxxx
+xxx..xxxxxxxxx
+.....xex..xxxx
+.....xxx..xxxx

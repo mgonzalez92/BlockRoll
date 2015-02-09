@@ -20,6 +20,9 @@ public class Level : MonoBehaviour {
 	private bool isPaused = false;
 	private Vector2 start = Vector2.zero;
 
+	// Camera values
+	private static Vector3 CAMERAPOS = new Vector3 (-11f, -12f, -25f);
+
 	// Use this for initialization
 	void Start () {
 		// Load material resources
@@ -55,12 +58,12 @@ public class Level : MonoBehaviour {
 		// Process loaded text
 		char[] delimiters = { '\n' };
 		string[] lines = fileContents.text.Split (delimiters);
-		level = new char[lines[lines.Length - 1].Length, lines.Length];
-		tiles = new GameObject[lines[lines.Length - 1].Length, lines.Length];
+		level = new char[lines[lines.Length - 1].Length, lines.Length - 1];
+		tiles = new GameObject[lines[lines.Length - 1].Length, lines.Length - 1];
 		for (int y = 0; y < level.GetLength (1); y++) {
 			for (int x = 0; x < level.GetLength (0); x++) {
 				// Load text into the level array
-				level[x,y] = lines[y][x];
+				level[x,y] = lines[y+1][x];
 				
 				// Create game objects for level
 				if (level[x,y] != '.') {
@@ -73,21 +76,30 @@ public class Level : MonoBehaviour {
 						tiles[x,y].renderer.material = end;
 					else if (level[x,y] == 's') {
 						if (worldNum == 1) {
+							tiles[x,y].renderer.material = off;
 							player = (GameObject)Instantiate(Resources.Load ("Prefabs/Cube"), new Vector3(x, 0.5f, -y), Quaternion.identity);
-						} 
-						else if (worldNum == 2) {
+						} else if (worldNum == 2) {
+							tiles[x,y].renderer.material = tile;
 							player = (GameObject)Instantiate(Resources.Load ("Prefabs/Long"), new Vector3(x, 1.0f, -y), Quaternion.identity);
+						} else if (worldNum == 3) {
+							tiles[x,y].renderer.material = tile;
+							player = (GameObject)Instantiate(Resources.Load ("Prefabs/Split"), new Vector3(x, 1.5f, -y), Quaternion.identity);
 						}
 						var play = player.GetComponent<PlayerController> ();
 						start = new Vector2(x, y);
 						play.place = start;
 						play.type = worldNum;
 						play.orientation = 0;
-						tiles[x,y].renderer.material = off;
 					}
 				}
 			}
 		}
+		GameObject camera = transform.Find ("Main Camera").gameObject;
+		camera.transform.localPosition = CAMERAPOS +
+			new Vector3 (level.GetLength (0) / 2f, 0f, -level.GetLength (1) / 2f);
+		camera.transform.camera.orthographicSize = Mathf.Pow (Mathf.Max (
+			level.GetLength (0) * 9f / 16f, level.GetLength (1)) + 3, 0.7f);
+
 	}
 
 	void ReloadLevel () {
@@ -107,7 +119,10 @@ public class Level : MonoBehaviour {
 		} else if (worldNum == 2) {
 			player.transform.position = new Vector3(start.x, 1.0f, -start.y);
 			player.transform.rotation = Quaternion.identity;
-		}
+		} else if (worldNum == 3) {
+			player.transform.position = new Vector3(start.x, 1.5f, -start.y);
+			player.transform.rotation = Quaternion.identity;
+		} 
 		play.orientation = 0;
 		play.isFalling = false;
 		play.fall = 0;
@@ -129,8 +144,8 @@ public class Level : MonoBehaviour {
 				    level[(int)play.place.x, (int)play.place.y] == '.')) {
 					play.isFalling = true;
 				} // Long block
-				else if (play.type == 2 && (play.orientation == 0 &&
-				        	(play.place.x < 0 || play.place.x >= level.GetLength(0) ||
+				else if (play.type == 2 && ((play.orientation == 0 &&
+				         (play.place.x < 0 || play.place.x >= level.GetLength(0) ||
 				 		 	play.place.y < 0 || play.place.y >= level.GetLength(1) ||
 				 		 	level[(int)play.place.x, (int)play.place.y] == '.')) ||
 				        (play.orientation == 1 &&
@@ -142,13 +157,29 @@ public class Level : MonoBehaviour {
 							(play.place.x < 0 || play.place.x >= level.GetLength(0) ||
 							play.place.y < 1 || play.place.y >= level.GetLength(1) ||
 							level[(int)play.place.x, (int)play.place.y] == '.' ||
-							level[(int)play.place.x, (int)play.place.y - 1] == '.'))) {
+							level[(int)play.place.x, (int)play.place.y - 1] == '.')))) {
+					play.isFalling = true;
+				} // Split block
+				else if (play.type == 3 && ((play.orientation == 0 &&
+					        (play.place.x < 0 || play.place.x >= level.GetLength(0) ||
+							play.place.y < 0 || play.place.y >= level.GetLength(1) ||
+							level[(int)play.place.x, (int)play.place.y] == '.')) ||
+				        (play.orientation == 1 &&
+							(play.place.x < 0 || play.place.x >= level.GetLength(0) - 2 ||
+							play.place.y < 0 || play.place.y >= level.GetLength(1) ||
+							level[(int)play.place.x, (int)play.place.y] == '.' ||
+							level[(int)play.place.x + 2, (int)play.place.y] == '.')) ||
+					    (play.orientation == 2 &&
+							(play.place.x < 0 || play.place.x >= level.GetLength(0) ||
+							play.place.y < 2 || play.place.y >= level.GetLength(1) ||
+							level[(int)play.place.x, (int)play.place.y] == '.' ||
+							level[(int)play.place.x, (int)play.place.y - 2] == '.')))) {
 					play.isFalling = true;
 				}
 				// If player has reached the exit
-				else if ((play.type == 1 || play.type == 2 && play.orientation == 0) &&
-				         level[(int)play.place.x, (int)play.place.y] == 'e') {
-					ReloadLevel();
+				else if (level[(int)play.place.x, (int)play.place.y] == 'e' &&
+				         (play.type == 1 || (play.type == 2 || play.type == 3) && play.orientation == 0)) {
+					NextLevel();
 				}
 				// When player reaches a new tile
 				else if (play.type == 1) {
@@ -221,7 +252,8 @@ public class Level : MonoBehaviour {
 
 	public void NextLevel() {
 		if ((worldNum == 1 && levelNum < 4) ||
-		    (worldNum == 2 && levelNum < 8)) {
+		    (worldNum == 2 && levelNum < 25) ||
+		    (worldNum == 3 && levelNum < 25)) {
 			// Destroy game objects
 			Destroy (player);
 			for (int y = 0; y < tiles.GetLength(1); y++) {
@@ -229,14 +261,12 @@ public class Level : MonoBehaviour {
 					Destroy (tiles[x, y]);
 				}
 			}
-			
-			isStarted = false;
+
 			isPaused = false;
 			transform.Find ("Pause Menu").gameObject.SetActive (false);
 			
 			levelNum++;
 			LoadLevel ("Levels/level" + worldNum.ToString() + "-" + levelNum.ToString());
-			isStarted = true;
 		}
 	}
 }

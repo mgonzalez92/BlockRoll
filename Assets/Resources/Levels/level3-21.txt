@@ -1,0 +1,5 @@
+15
+...xxxxxe
+..xxxxxx.
+.xxxxxx..
+sxxxxxx..

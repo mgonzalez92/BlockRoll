@@ -1,9 +1,4 @@
-...xxxxxxx....
-...xxxxxxx....
-xxxx.....xxx..
-xxx.......xx..
-xxx.......xx..
-xsx..xxxxxxxxx
-xxx..xxxxxxxxx
-.....xex..xxxx
-.....xxx..xxxx
+5
+.xxx.xx
+sxxxxxx
+.xx.xxe
