@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour {
 
 	// Position on the board
 	public Vector2 place;
-	public bool isFalling = false;
+	public int isFalling = -1;
 	public float fall;
 	public int orientation;
 	public int type;
@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour {
 			Vector2 touchPos = Input.GetTouch(0).position;
 			if (Input.GetTouch(0).phase == TouchPhase.Began) {
 				touchStart = touchPos;
-			} else if (Input.GetTouch(0).phase == TouchPhase.Ended &&
+			} else if (Input.GetTouch(0).phase == TouchPhase.Ended && touchStart != Vector2.zero &&
 			         Vector2.Distance(touchStart, touchPos) > THRESHOLD) {
 				float angle = Vector2.Angle (Vector2.right, touchPos-touchStart);
 				if (touchPos.y < touchStart.y) angle = 360 - angle;
@@ -66,9 +66,17 @@ public class PlayerController : MonoBehaviour {
 
 		if (isRotating) {
 			Rotate ();
-		} else if (isFalling) {
+		} else if (isFalling == 0) {
 			fall += 0.8f;
 			transform.Translate(new Vector3(0, -fall * Time.deltaTime, 0), Space.World);
+			isArrived = false;
+		} else if (isFalling == 1) {
+			fall += 0.8f;
+			transform.FindChild("Cube1").transform.Translate(new Vector3(0, -fall * Time.deltaTime, 0), Space.World);
+			isArrived = false;
+		} else if (isFalling == 2) {
+			fall += 0.8f;
+			transform.FindChild("Cube2").transform.Translate(new Vector3(0, -fall * Time.deltaTime, 0), Space.World);
 			isArrived = false;
 		} else {
 			if (moveY > 0 && prevY <= 0) {
@@ -128,6 +136,7 @@ public class PlayerController : MonoBehaviour {
 				} else if (orientation == 2) {
 					place.y -= 2;
 					orientation = 0;
+					transform.Rotate (Vector3.left, 180, Space.World);
 				}
 			} else if (type == 3) {
 				if (orientation == 0) {
@@ -138,6 +147,7 @@ public class PlayerController : MonoBehaviour {
 				} else if (orientation == 2) {
 					place.y -= 3;
 					orientation = 0;
+					transform.Rotate (Vector3.left, 180, Space.World);
 				}
 			}
 		} else if (direction == 1) {
@@ -149,6 +159,7 @@ public class PlayerController : MonoBehaviour {
 				if (orientation == 0) {
 					place.y += 2;
 					orientation = 2;
+					transform.Rotate (Vector3.left, 180, Space.World);
 				} else if (orientation == 1) {
 					place.y += 1;
 				} else if (orientation == 2) {
@@ -159,6 +170,7 @@ public class PlayerController : MonoBehaviour {
 				if (orientation == 0) {
 					place.y += 3;
 					orientation = 2;
+					transform.Rotate (Vector3.left, 180, Space.World);
 				} else if (orientation == 1) {
 					place.y += 1;
 				} else if (orientation == 2) {
@@ -178,6 +190,7 @@ public class PlayerController : MonoBehaviour {
 				} else if (orientation == 1) {
 					place.x += 2;
 					orientation = 0;
+					transform.Rotate (Vector3.back, 180, Space.World);
 				} else if (orientation == 2) {
 					place.x += 1;
 				}
@@ -188,6 +201,7 @@ public class PlayerController : MonoBehaviour {
 				} else if (orientation == 1) {
 					place.x += 3;
 					orientation = 0;
+					transform.Rotate (Vector3.back, 180, Space.World);
 				} else if (orientation == 2) {
 					place.x += 1;
 				}
@@ -201,6 +215,7 @@ public class PlayerController : MonoBehaviour {
 				if (orientation == 0) {
 					place.x -= 2;
 					orientation = 1;
+					transform.Rotate (Vector3.back, 180, Space.World);
 				} else if (orientation == 1) {
 					place.x -= 1;
 					orientation = 0;
@@ -211,6 +226,7 @@ public class PlayerController : MonoBehaviour {
 				if (orientation == 0) {
 					place.x -= 3;
 					orientation = 1;
+					transform.Rotate (Vector3.back, 180, Space.World);
 				} else if (orientation == 1) {
 					place.x -= 1;
 					orientation = 0;

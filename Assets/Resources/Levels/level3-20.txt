@@ -1,7 +1,5 @@
-11
-xxxxxxxxxxxxxxx
-xsxxxxxxxxxxxxx
-xxx.....x...xxx
-....xxx...x....
-xxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxe
+18
+xsxxxxxxxxxxxx
+xxx..xxx.x..xx
+.....xxx..x...
+xxxxxxxxxxxxex
