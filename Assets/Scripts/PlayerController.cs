@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour {
 
 	// Rotation information
 	public float speed;
+	private const float SPEED = 400;
 	private float rotation = 0;
 	public bool isRotating = false;
 	public bool isArrived = false;
@@ -12,7 +13,7 @@ public class PlayerController : MonoBehaviour {
 	private Vector3 axis;
 
 	// Position on the board
-	public Vector2 place;
+	public int placeX, placeY;
 	public int isFalling = -1;
 	public float fall;
 	public int orientation;
@@ -126,26 +127,26 @@ public class PlayerController : MonoBehaviour {
 			focus = transform.position + new Vector3 (0f, -focusY, focusZ);
 			axis = Vector3.right;
 			if (type == 1)
-				place.y -= 1;
+				placeY -= 1;
 			else if (type == 2) {
 				if (orientation == 0) {
-					place.y -= 1;
+					placeY -= 2;
 					orientation = 2;
 				} else if (orientation == 1) {
-					place.y -= 1;
+					placeY -= 1;
 				} else if (orientation == 2) {
-					place.y -= 2;
+					placeY -= 1;
 					orientation = 0;
 					transform.Rotate (Vector3.left, 180, Space.World);
 				}
 			} else if (type == 3) {
 				if (orientation == 0) {
-					place.y -= 1;
+					placeY -= 3;
 					orientation = 2;
 				} else if (orientation == 1) {
-					place.y -= 1;
+					placeY -= 1;
 				} else if (orientation == 2) {
-					place.y -= 3;
+					placeY -= 1;
 					orientation = 0;
 					transform.Rotate (Vector3.left, 180, Space.World);
 				}
@@ -154,27 +155,27 @@ public class PlayerController : MonoBehaviour {
 			focus = transform.position + new Vector3 (0f, -focusY, -focusZ);
 			axis = Vector3.left;
 			if (type == 1)
-				place.y += 1;
+				placeY += 1;
 			else if (type == 2) {
 				if (orientation == 0) {
-					place.y += 2;
+					placeY += 1;
 					orientation = 2;
 					transform.Rotate (Vector3.left, 180, Space.World);
 				} else if (orientation == 1) {
-					place.y += 1;
+					placeY += 1;
 				} else if (orientation == 2) {
-					place.y += 1;
+					placeY += 2;
 					orientation = 0;
 				}
 			} else if (type == 3) {
 				if (orientation == 0) {
-					place.y += 3;
+					placeY += 1;
 					orientation = 2;
 					transform.Rotate (Vector3.left, 180, Space.World);
 				} else if (orientation == 1) {
-					place.y += 1;
+					placeY += 1;
 				} else if (orientation == 2) {
-					place.y += 1;
+					placeY += 3;
 					orientation = 0;
 				}
 			}
@@ -182,56 +183,56 @@ public class PlayerController : MonoBehaviour {
 			focus = transform.position + new Vector3 (focusX, -focusY, 0f);
 			axis = Vector3.back;
 			if (type == 1)
-				place.x += 1;
+				placeX += 1;
 			else if (type == 2) {
 				if (orientation == 0) {
-					place.x += 1;
+					placeX += 1;
 					orientation = 1;
 				} else if (orientation == 1) {
-					place.x += 2;
+					placeX += 2;
 					orientation = 0;
 					transform.Rotate (Vector3.back, 180, Space.World);
 				} else if (orientation == 2) {
-					place.x += 1;
+					placeX += 1;
 				}
 			} else if (type == 3) {
 				if (orientation == 0) {
-					place.x += 1;
+					placeX += 1;
 					orientation = 1;
 				} else if (orientation == 1) {
-					place.x += 3;
+					placeX += 3;
 					orientation = 0;
 					transform.Rotate (Vector3.back, 180, Space.World);
 				} else if (orientation == 2) {
-					place.x += 1;
+					placeX += 1;
 				}
 			}
 		} else {
 			focus = transform.position + new Vector3 (-focusX, -focusY, 0f);
 			axis = Vector3.forward;
 			if (type == 1)
-				place.x -= 1;
+				placeX -= 1;
 			else if (type == 2) {
 				if (orientation == 0) {
-					place.x -= 2;
+					placeX -= 2;
 					orientation = 1;
 					transform.Rotate (Vector3.back, 180, Space.World);
 				} else if (orientation == 1) {
-					place.x -= 1;
+					placeX -= 1;
 					orientation = 0;
 				} else if (orientation == 2) {
-					place.x -= 1;
+					placeX -= 1;
 				}
 			} else if (type == 3) {
 				if (orientation == 0) {
-					place.x -= 3;
+					placeX -= 3;
 					orientation = 1;
 					transform.Rotate (Vector3.back, 180, Space.World);
 				} else if (orientation == 1) {
-					place.x -= 1;
+					placeX -= 1;
 					orientation = 0;
 				} else if (orientation == 2) {
-					place.x -= 1;
+					placeX -= 1;
 				}
 			}
 		}
@@ -239,7 +240,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	void Rotate() {
-		float theta = speed * Time.deltaTime;
+		float theta = SPEED * Time.deltaTime;
 		rotation += theta;
 		if (rotation >= 90) {
 			theta -= rotation - 90f;

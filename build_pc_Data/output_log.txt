@@ -12,8 +12,8 @@ Platform assembly: C:\Users\costco0371\Documents\Unity\Blocks\build_pc_Data\Mana
 Loading C:\Users\costco0371\Documents\Unity\Blocks\build_pc_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
 Platform assembly: C:\Users\costco0371\Documents\Unity\Blocks\build_pc_Data\Managed\UnityEngine.UI.dll (this message is harmless)
 Loading C:\Users\costco0371\Documents\Unity\Blocks\build_pc_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
-- Completed reload, in  0.415 seconds
-desktop: 1366x768 59Hz; virtual: 1366x768 at 0,0
+- Completed reload, in  0.236 seconds
+desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
 <RI> Initializing input.
 XInput1_3.dll not found.
 <RI> Input initialized.
