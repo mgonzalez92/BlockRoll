@@ -10,24 +10,24 @@ public class Level : MonoBehaviour {
 	private GameObject[,] tiles;
 	private float[,] delays;
 	private int levelNum = 1;
-	private int worldNum = 1;
 	private const int LEVELNUM = 20;
-	private const int WORLDNUM = 2;
+	private int blockType = 2;
 
 	// Menu Resources
 	private Transform mainMenu;
-	private Transform packSelect;
 	private Transform levelSelect;
 	private Transform HUD;
-	private GameObject[] packButtons;
 	private GameObject[] levelButtons;
-	private Transform pauseButton;
 
-	// Resources
+	// Materials
 	private Material Tile;
 	private Material EndTile;
-	private Material OffTile;
-	private GameObject PackButton;
+	private Material Player;
+	private RawImage Background;
+	private string theme = "Default";
+	private const float COLORALT = 0.15f;
+
+	// Resources
 	private GameObject LevelButton;
 	private TextAsset[] Levels;
 	private GameObject CubeBlock;
@@ -39,8 +39,7 @@ public class Level : MonoBehaviour {
 	private const int POOLSIZE = 100;
 	private GameObject[] tilePool;
 	private int poolDepth = 0;
-
-	public bool isPack = false;
+	
 	public bool isLoading = false;
 	private bool isStarted = false;
 	private bool isPaused = false;
@@ -50,18 +49,27 @@ public class Level : MonoBehaviour {
 	private const int SCROLLSPEED = 30;
 	private const float MAXFALLTIME = 0.7f;
 
+	// Moves
+	private int moves = 0;
+	private int maxMoves = 0;
+
 	// Camera values
 	private static Vector3 CAMERAPOS = new Vector3 (-11f, -12f, -25f);
 
 	// Use this for initialization
 	void Start () {
 		// Load material resources
-		Tile = Resources.Load<Material> ("Textures/tile");
-		EndTile = Resources.Load<Material> ("Textures/end");
-		OffTile = Resources.Load<Material> ("Textures/off");
+		Tile = Resources.Load<Material> ("Textures/" + theme + "/tile");
+		EndTile = Resources.Load<Material> ("Textures/" + theme + "/end");
+		Player = Resources.Load<Material> ("Textures/" + theme + "/player");
+
+		Background = (RawImage)transform.FindChild ("Background").FindChild ("RawImage").GetComponent<RawImage> ();
+		if (theme == "Night")
+			Background.texture = Resources.Load<Texture> ("UI/nightsky");
+		else
+			Background.texture = Resources.Load<Texture> ("UI/daysky");
 
 		// Load button resources
-		PackButton = Resources.Load<GameObject> ("Prefabs/Pack Button");
 		LevelButton = Resources.Load<GameObject> ("Prefabs/Level Button");
 
 		// Load 3d resources
@@ -71,6 +79,11 @@ public class Level : MonoBehaviour {
 		CubeBlock = (GameObject)Instantiate (Resources.Load<GameObject> ("Prefabs/Cube"), new Vector3 (0, -50, 0), Quaternion.identity);
 		LongBlock = (GameObject)Instantiate (Resources.Load<GameObject> ("Prefabs/Long"), new Vector3 (0, -50, 0), Quaternion.identity);
 		SplitBlock = (GameObject)Instantiate (Resources.Load<GameObject> ("Prefabs/Split"), new Vector3 (0, -50, 0), Quaternion.identity);
+		CubeBlock.renderer.material = Player;
+		LongBlock.transform.FindChild ("Cube1").renderer.material = Player;
+		LongBlock.transform.FindChild ("Cube2").renderer.material = Player;
+		SplitBlock.transform.FindChild ("Cube1").renderer.material = Player;
+		SplitBlock.transform.FindChild ("Cube2").renderer.material = Player;
 
 		// Instantiate tile pool
 		tilePool = new GameObject [POOLSIZE];
@@ -79,41 +92,14 @@ public class Level : MonoBehaviour {
 		}
 
 		mainMenu = transform.Find ("Main Menu");
-		packSelect = transform.Find ("Pack Select");
 		levelSelect = transform.Find ("Level Select");
 		HUD = transform.Find ("HUD");
-		pauseButton = transform.Find ("Background").transform.FindChild ("Pause Button");
-	}
-
-	// Change from the main menu to the level pack select
-	public void PackSelect() {
-		mainMenu.gameObject.SetActive (false);
-		packSelect.gameObject.SetActive (true);
-		levelSelect.gameObject.SetActive (false);
-		isPack = true;
-
-		if (packButtons == null) {
-			packButtons = new GameObject[WORLDNUM];
-			for (int i = 1; i <= WORLDNUM; i++) {
-				packButtons[i - 1] = (GameObject)Instantiate(PackButton);
-				packButtons[i - 1].transform.SetParent(packSelect.transform, false);
-				packButtons[i - 1].GetComponent<RectTransform>().localPosition = new Vector2(-300 + 600 * (i - 1), -200);
-				//packButtons[i - 1].transform.FindChild("Pack Text").GetComponent<Text>().text = "Pack " + i;
-				int k = i;
-				packButtons[i - 1].GetComponent<Button>().onClick.AddListener(() => LevelSelect(k + 1));
-			}
-			//packButtons[0].transform.FindChild("Pack Text").GetComponent<Text>().text = "Tutorial";
-			packButtons[0].transform.FindChild("Pack Text").GetComponent<Text>().text = "Pack 1\nLong Block";
-			packButtons[1].transform.FindChild("Pack Text").GetComponent<Text>().text = "Pack 2\nSplit Block";
-		}
 	}
 
 	// Change from the level pack select to the level select
-	public void LevelSelect(int worldNum) {
-		this.worldNum = worldNum;
-		packSelect.gameObject.SetActive (false);
+	public void LevelSelect() {
+		mainMenu.gameObject.SetActive (false);
 		levelSelect.gameObject.SetActive (true);
-		isPack = false;
 
 		if (levelButtons == null) {
 			levelButtons = new GameObject[LEVELNUM];
@@ -130,7 +116,7 @@ public class Level : MonoBehaviour {
 
 		Levels = new TextAsset[LEVELNUM];
 		for (int i = 1; i <= LEVELNUM; i++) {
-			Levels[i - 1] = Resources.Load<TextAsset> ("Levels/level" + this.worldNum.ToString() + "-" + i.ToString ());
+			Levels[i - 1] = Resources.Load<TextAsset> ("Levels/level2-" + i.ToString ());
 		}
 	}
 
@@ -139,13 +125,13 @@ public class Level : MonoBehaviour {
 		levelSelect.gameObject.SetActive (false);
 		HUD.gameObject.SetActive (true);
 		LoadLevel ();
-		//pauseButton.gameObject.SetActive (true);
 	}
 
 	void LoadLevel () {
 		// Process loaded text
 		char[] delimiters = { '\n' };
 		string[] lines = Levels[levelNum - 1].text.Split (delimiters);
+		maxMoves = int.Parse(lines[0]);
 		level = new char[lines[lines.Length - 1].Length, lines.Length - 1];
 		tiles = new GameObject[lines[lines.Length - 1].Length, lines.Length - 1];
 		delays = new float[lines[lines.Length - 1].Length, lines.Length - 1];
@@ -166,11 +152,14 @@ public class Level : MonoBehaviour {
 
 		isLoading = true;
 		poolDepth = 0;
+		moves = maxMoves;
 		time = Time.time;
 	}
 
 	void ReloadLevel () {
 		var play = player.GetComponent<PlayerController> ();
+
+		// Reset tiles
 		if (play.type == 1) {
 			for (int y = 0; y < level.GetLength(1); y++) {
 				for (int x = 0; x < level.GetLength(0); x++) {
@@ -182,16 +171,17 @@ public class Level : MonoBehaviour {
 			}
 		}
 
+		// Reset player position
 		play.placeX = (int)start.x;
 		play.placeY = (int)start.y;
-		if (worldNum == 1) {
+		if (blockType == 1) {
 			player.transform.position = new Vector3(start.x, 0.5f, -start.y);
-		} else if (worldNum == 2) {
+		} else if (blockType == 2) {
 			player.transform.FindChild("Cube1").transform.localPosition = new Vector3(0, -0.5f, 0);
 			player.transform.FindChild("Cube2").transform.localPosition = new Vector3(0, 0.5f, 0);
 			player.transform.position = new Vector3(start.x, 1.0f, -start.y);
 			player.transform.rotation = Quaternion.identity;
-		} else if (worldNum == 3) {
+		} else if (blockType == 3) {
 			player.transform.FindChild("Cube1").transform.localPosition = new Vector3(0, -1f, 0);
 			player.transform.FindChild("Cube2").transform.localPosition = new Vector3(0, 1f, 0);
 			player.transform.position = new Vector3(start.x, 1.5f, -start.y);
@@ -200,19 +190,14 @@ public class Level : MonoBehaviour {
 		play.orientation = 0;
 		play.isFalling = -1;
 		play.fall = 0;
+
+		// Reset score
+		moves = maxMoves;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		/*if (isPack && Input.GetMouseButton(0)) {
-			float mouseMovement = Input.GetAxis ("Mouse X");
-			for (int i = 0; i < WORLDNUM; i++) {
-				packButtons[i].GetComponent<RectTransform>().localPosition = new Vector2(
-					packButtons[i].GetComponent<RectTransform>().localPosition.x + mouseMovement * SCROLLSPEED,
-					packButtons[i].GetComponent<RectTransform>().localPosition.y);
-			}
-		}
-		else */if (isLoading) {
+		if (isLoading) {
 			float loadTime = Time.time;
 			for (int y = 0; y < level.GetLength (1); y++) {
 				for (int x = 0; x < level.GetLength (0); x++) {
@@ -224,18 +209,18 @@ public class Level : MonoBehaviour {
 							poolDepth += 1;
 							if (level[x,y] == 'x' || level[x,y] == 's') {
 								tiles[x,y].renderer.material = Tile;
+								tiles[x,y].renderer.material.color -= Color.white * Random.value * COLORALT;
 							} else if (level[x,y] == 'e') {
 								tiles[x,y].renderer.material = EndTile;
 							}
 							if (level[x,y] == 's') {
-								if (worldNum == 1) {
-									tiles[x,y].renderer.material = OffTile;
+								if (blockType == 1) {
 									player = CubeBlock;
 									player.transform.localPosition = new Vector3(x, 0.5f - 10, -y);
-								} else if (worldNum == 2) {
+								} else if (blockType == 2) {
 									player = LongBlock;
 									player.transform.localPosition = new Vector3(x, 1.0f - 10, -y);
-								} else if (worldNum == 3) {
+								} else if (blockType == 3) {
 									player = SplitBlock;
 									player.transform.localPosition = new Vector3(x, 1.5f - 10, -y);
 								}
@@ -243,7 +228,7 @@ public class Level : MonoBehaviour {
 								start = new Vector2(x, y);
 								play.placeX = (int)start.x;
 								play.placeY = (int)start.y;
-								play.type = worldNum;
+								play.type = blockType;
 								play.orientation = 0;
 								play.isFalling = -1;
 							}
@@ -276,7 +261,7 @@ public class Level : MonoBehaviour {
 					isCompleted = true;
 					time = Time.time;
 					transform.Find ("Win Menu").FindChild("Win Text").GetComponent<Text>().text =
-						"Level " + (worldNum - 1) + "-" + levelNum + "\nComplete!";
+						"Level " + levelNum + "\nComplete!";
 					transform.Find ("Win Menu").gameObject.SetActive (true);
 				}
 				/************************
@@ -342,13 +327,21 @@ public class Level : MonoBehaviour {
 						play.isFalling = 0;
 					}
 				}
+
+				/** Deplete moves **/
+				if (!isCompleted && play.isFalling < 0) {
+					moves -= 1;
+					if (moves <= 0) {
+						ReloadLevel ();
+					}
+				}
 			}
 
 			// Catch player after they fall off the edge
 			if (play.isFalling != -1) {
 				float fallTime = Time.time;
 				if (fallTime - time > MAXFALLTIME)
-					ReloadLevel();
+					ReloadLevel ();
 			}
 
 			// Check for pause
@@ -463,9 +456,7 @@ public class Level : MonoBehaviour {
 	}
 
 	public void NextLevel() {
-		if ((worldNum == 1 && levelNum < 4) ||
-		    (worldNum == 2 && levelNum < LEVELNUM) ||
-		    (worldNum == 3 && levelNum < LEVELNUM)) {
+		if (levelNum < LEVELNUM) {
 			isStarted = false;
 			isPaused = false;
 			isCompleted = false;
