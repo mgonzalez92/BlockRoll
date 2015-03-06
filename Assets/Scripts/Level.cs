@@ -10,7 +10,7 @@ public class Level : MonoBehaviour {
 	private GameObject[,] tiles;
 	private float[,] delays;
 	private int levelNum = 1;
-	private const int LEVELNUM = 20;
+	private const int LEVELNUM = 50;
 	private int blockType = 2;
 
 	// Menu Resources
@@ -23,9 +23,8 @@ public class Level : MonoBehaviour {
 	private Material Tile;
 	private Material EndTile;
 	private Material Player;
-	private RawImage Background;
 	private string theme = "Default";
-	private const float COLORALT = 0.15f;
+	private const float COLORALT = 0.1f;
 
 	// Resources
 	private GameObject LevelButton;
@@ -35,6 +34,16 @@ public class Level : MonoBehaviour {
 	private GameObject SplitBlock;
 	private GameObject TileBlock;
 	private GameObject player;
+
+	// Level Select
+	private const int STARTX = 300;
+	private const int SPACEX = 400;
+
+	// Backgrounds
+	private RawImage Background;
+	private Texture MenuBackground;
+	private Texture DefaultBackground;
+	private Texture NightBackground;
 
 	private const int POOLSIZE = 100;
 	private GameObject[] tilePool;
@@ -52,6 +61,7 @@ public class Level : MonoBehaviour {
 	// Moves
 	private int moves = 0;
 	private int maxMoves = 0;
+	private Text MovesText;
 
 	// Camera values
 	private static Vector3 CAMERAPOS = new Vector3 (-11f, -12f, -25f);
@@ -63,11 +73,11 @@ public class Level : MonoBehaviour {
 		EndTile = Resources.Load<Material> ("Textures/" + theme + "/end");
 		Player = Resources.Load<Material> ("Textures/" + theme + "/player");
 
+		// Load backgrounds
 		Background = (RawImage)transform.FindChild ("Background").FindChild ("RawImage").GetComponent<RawImage> ();
-		if (theme == "Night")
-			Background.texture = Resources.Load<Texture> ("UI/nightsky");
-		else
-			Background.texture = Resources.Load<Texture> ("UI/daysky");
+		MenuBackground = Resources.Load<Texture> ("UI/tessellate");
+		DefaultBackground = Resources.Load<Texture> ("UI/daysky");
+		NightBackground = Resources.Load<Texture> ("UI/nightsky");
 
 		// Load button resources
 		LevelButton = Resources.Load<GameObject> ("Prefabs/Level Button");
@@ -94,6 +104,7 @@ public class Level : MonoBehaviour {
 		mainMenu = transform.Find ("Main Menu");
 		levelSelect = transform.Find ("Level Select");
 		HUD = transform.Find ("HUD");
+		MovesText = HUD.FindChild ("Moves Backdrop").FindChild ("Number").GetComponent<Text> ();
 	}
 
 	// Change from the level pack select to the level select
@@ -101,13 +112,15 @@ public class Level : MonoBehaviour {
 		mainMenu.gameObject.SetActive (false);
 		levelSelect.gameObject.SetActive (true);
 
+		Transform ScrollArea = levelSelect.FindChild ("Scroll Rect").FindChild ("Mask").FindChild ("Scroll Area");
+		//ScrollArea.GetComponent<RectTransform> ().sizeDelta = new Vector2 (STARTX + SPACEX * LEVELNUM, Screen.height);
 		if (levelButtons == null) {
 			levelButtons = new GameObject[LEVELNUM];
 			for (int i = 1; i <= LEVELNUM; i++) {
 				levelButtons[i - 1] = (GameObject)Instantiate(LevelButton);
-				levelButtons[i - 1].transform.SetParent(levelSelect.transform, false);
+				levelButtons[i - 1].transform.SetParent(ScrollArea.transform, false);
 				levelButtons[i - 1].GetComponent<RectTransform>().localPosition = new Vector2(
-					-300 + 150 * ((i - 1) % 5), 150 - 150 * ((i - 1) / 5));
+					STARTX + SPACEX * (i - 1), Mathf.Sin(i) * 100 + Screen.height * 0.5f + 50);
 				levelButtons[i - 1].transform.FindChild("Level Text").GetComponent<Text>().text = i.ToString();
 				int k = i;
 				levelButtons[i - 1].GetComponent<Button>().onClick.AddListener(() => StartGame(k));
@@ -116,7 +129,7 @@ public class Level : MonoBehaviour {
 
 		Levels = new TextAsset[LEVELNUM];
 		for (int i = 1; i <= LEVELNUM; i++) {
-			Levels[i - 1] = Resources.Load<TextAsset> ("Levels/level2-" + i.ToString ());
+			Levels[i - 1] = Resources.Load<TextAsset> ("Levels/" + i.ToString ());
 		}
 	}
 
@@ -124,14 +137,22 @@ public class Level : MonoBehaviour {
 		this.levelNum = levelNum;
 		levelSelect.gameObject.SetActive (false);
 		HUD.gameObject.SetActive (true);
+
+		// Set background
+		if (theme == "Night")
+			Background.texture = NightBackground;
+		else
+			Background.texture = DefaultBackground;
+
 		LoadLevel ();
 	}
 
 	void LoadLevel () {
 		// Process loaded text
-		char[] delimiters = { '\n' };
-		string[] lines = Levels[levelNum - 1].text.Split (delimiters);
-		maxMoves = int.Parse(lines[0]);
+		string[] lines = Levels[levelNum - 1].text.Split ('\n');
+		string[] info = lines [0].Split (' ');
+		maxMoves = int.Parse(info [0]);
+		blockType = int.Parse (info [1]);
 		level = new char[lines[lines.Length - 1].Length, lines.Length - 1];
 		tiles = new GameObject[lines[lines.Length - 1].Length, lines.Length - 1];
 		delays = new float[lines[lines.Length - 1].Length, lines.Length - 1];
@@ -146,13 +167,15 @@ public class Level : MonoBehaviour {
 		}
 		GameObject camera = transform.Find ("Main Camera").gameObject;
 		camera.transform.localPosition = CAMERAPOS +
-			new Vector3 (level.GetLength (0) / 2f + 6, 24, -level.GetLength (1) / 2f + 15);
-		camera.transform.camera.orthographicSize = Mathf.Pow (Mathf.Max (
-			level.GetLength (0) * 9f / 16f, level.GetLength (1)) + 3, 0.7f);
+			new Vector3 (level.GetLength (0) * 0.5f + 6, 24f, -level.GetLength (1) * 0.5f + 15);
+		camera.transform.camera.orthographicSize = Mathf.Log (
+			Mathf.Max (level.GetLength (0) * Screen.width / Screen.height, level.GetLength (1))) * 1.9f;
 
 		isLoading = true;
 		poolDepth = 0;
-		moves = maxMoves;
+		moves = maxMoves * 3;
+		MovesText.text = moves.ToString ();
+		MovesText.color = new Color(0.1f, 0.1f, 0.1f);
 		time = Time.time;
 	}
 
@@ -192,7 +215,9 @@ public class Level : MonoBehaviour {
 		play.fall = 0;
 
 		// Reset score
-		moves = maxMoves;
+		moves = maxMoves * 3;
+		MovesText.text = moves.ToString ();
+		MovesText.color = new Color(0.1f, 0.1f, 0.1f);
 	}
 	
 	// Update is called once per frame
@@ -233,9 +258,10 @@ public class Level : MonoBehaviour {
 								play.isFalling = -1;
 							}
 						} else if (tiles[x,y].transform.position.y < -0.125f) {
-							tiles[x,y].transform.position += new Vector3(0, 0.5f, 0);
+							float distance = Mathf.Min (Time.deltaTime * 70, -0.125f - tiles[x,y].transform.position.y);
+							tiles[x,y].transform.position += Vector3.up * distance;
 							if (level[x,y] == 's')
-								player.transform.position += new Vector3(0, 0.5f, 0);
+								player.transform.position += Vector3.up * distance;
 						}
 					}
 				}
@@ -248,8 +274,20 @@ public class Level : MonoBehaviour {
 		else if (isStarted && !isPaused) {
 			// Update player
 			var play = player.GetComponent<PlayerController> ();
+			bool wasRotating = play.isRotating;
 			play.PlayerUpdate();
 
+			// If player just began moving
+			if (play.isRotating && !wasRotating) {
+				/** Deplete moves **/
+				if (play.isFalling < 0) {
+					moves--;
+					MovesText.text = moves.ToString();
+					if (moves <= 5) {
+						MovesText.color = new Color(0.9f, 0, 0);
+					}
+				}
+			}
 			// If player has fallen off the edge
 			if (play.isArrived) {
 				// If player has reached the exit
@@ -328,12 +366,9 @@ public class Level : MonoBehaviour {
 					}
 				}
 
-				/** Deplete moves **/
-				if (!isCompleted && play.isFalling < 0) {
-					moves -= 1;
-					if (moves <= 0) {
-						ReloadLevel ();
-					}
+				// Reset if out of moves
+				if (play.isFalling < 0 && moves <= 0) {
+					ReloadLevel ();
 				}
 			}
 
@@ -393,6 +428,7 @@ public class Level : MonoBehaviour {
 	public void ResumeGame() {
 		isPaused = false;
 		transform.Find ("Pause Menu").gameObject.SetActive (false);
+		player.GetComponent<PlayerController> ().touchStart = Vector2.zero;
 	}
 
 	public void VoidObjects() {
@@ -421,6 +457,7 @@ public class Level : MonoBehaviour {
 			transform.Find ("Win Menu").gameObject.SetActive (false);
 		HUD.gameObject.SetActive (false);
 		transform.Find ("Level Select").gameObject.SetActive (true);
+		Background.texture = MenuBackground;
 	}
 
 	public void RetryLevel() {

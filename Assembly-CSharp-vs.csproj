@@ -19,7 +19,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_4_6_2;UNITY_4_6;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_IL2CPP;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_4_6_FEATURES;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;UNITY5_SCRIPTING_IN_UNITY4;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_MONO;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_4_6_1;UNITY_4_6;UNITY_ANDROID;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_4_6_FEATURES;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;UNITY_ANDROID_API;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -48,62 +48,61 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\Level.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
-     <None Include="Assets\Resources\Levels\level2-20.txt" />
-     <None Include="Assets\Resources\Levels\level2-12.txt" />
-     <None Include="Assets\Resources\Levels\level3-4.txt" />
+     <None Include="Assets\Resources\Levels\45.txt" />
+     <None Include="Assets\Resources\Levels\9.txt" />
+     <None Include="Assets\Resources\Levels\19.txt" />
+     <None Include="Assets\Resources\Levels\8.txt" />
+     <None Include="Assets\Resources\Levels\40.txt" />
      <None Include="Assets\Resources\Levels\level2-25.txt" />
-     <None Include="Assets\Resources\Levels\level3-17.txt" />
-     <None Include="Assets\Resources\Levels\level3-23.txt" />
-     <None Include="Assets\Resources\Levels\level2-22.txt" />
-     <None Include="Assets\Resources\Levels\level3-20.txt" />
-     <None Include="Assets\Resources\Levels\level3-3.txt" />
-     <None Include="Assets\Resources\Levels\level2-4.txt" />
-     <None Include="Assets\Resources\Levels\level1-3.txt" />
-     <None Include="Assets\Resources\Levels\level2-11.txt" />
-     <None Include="Assets\Resources\Levels\level2-13.txt" />
-     <None Include="Assets\Resources\Levels\level2-10.txt" />
-     <None Include="Assets\Resources\Levels\level1-4.txt" />
-     <None Include="Assets\Resources\Levels\level1-1.txt" />
-     <None Include="Assets\Resources\Levels\level3-13.txt" />
-     <None Include="Assets\Resources\Levels\level1-2.txt" />
-     <None Include="Assets\Resources\Levels\level2-8.txt" />
-     <None Include="Assets\Resources\Levels\level3-6.txt" />
-     <None Include="Assets\Resources\Levels\level3-19.txt" />
-     <None Include="Assets\Resources\Levels\level3-11.txt" />
-     <None Include="Assets\Resources\Levels\level2-14.txt" />
-     <None Include="Assets\Resources\Levels\level3-14.txt" />
-     <None Include="Assets\Resources\Levels\level3-10.txt" />
-     <None Include="Assets\Resources\Levels\level2-3.txt" />
-     <None Include="Assets\Resources\Levels\level2-15.txt" />
-     <None Include="Assets\Resources\Levels\level3-25.txt" />
-     <None Include="Assets\Resources\Levels\level2-16.txt" />
-     <None Include="Assets\Resources\Levels\level3-9.txt" />
-     <None Include="Assets\Resources\Levels\level2-7.txt" />
-     <None Include="Assets\Resources\Levels\level2-9.txt" />
-     <None Include="Assets\Resources\Levels\level3-15.txt" />
-     <None Include="Assets\Resources\Levels\level3-18.txt" />
+     <None Include="Assets\Resources\Levels\14.txt" />
+     <None Include="Assets\Resources\Levels\15.txt" />
+     <None Include="Assets\Resources\Levels\12.txt" />
+     <None Include="Assets\Resources\Levels\33.txt" />
+     <None Include="Assets\Resources\Levels\20.txt" />
+     <None Include="Assets\Resources\Levels\17.txt" />
+     <None Include="Assets\Resources\Levels\22.txt" />
+     <None Include="Assets\Resources\Levels\42.txt" />
+     <None Include="Assets\Resources\Levels\35.txt" />
+     <None Include="Assets\Resources\Levels\48.txt" />
+     <None Include="Assets\Resources\Levels\32.txt" />
+     <None Include="Assets\Resources\Levels\18.txt" />
+     <None Include="Assets\Resources\Levels\37.txt" />
+     <None Include="Assets\Resources\Levels\16.txt" />
+     <None Include="Assets\Resources\Levels\36.txt" />
+     <None Include="Assets\Resources\Levels\38.txt" />
+     <None Include="Assets\Resources\Levels\44.txt" />
+     <None Include="Assets\Resources\Levels\13.txt" />
+     <None Include="Assets\Resources\Levels\7.txt" />
+     <None Include="Assets\Resources\Levels\41.txt" />
+     <None Include="Assets\Resources\Levels\5.txt" />
+     <None Include="Assets\Resources\Levels\31.txt" />
+     <None Include="Assets\Resources\Levels\34.txt" />
+     <None Include="Assets\Resources\Levels\2.txt" />
+     <None Include="Assets\Resources\Levels\39.txt" />
+     <None Include="Assets\Resources\Levels\21.txt" />
+     <None Include="Assets\Resources\Levels\11.txt" />
+     <None Include="Assets\Resources\Levels\43.txt" />
+     <None Include="Assets\Resources\Levels\10.txt" />
+     <None Include="Assets\Resources\Levels\1.txt" />
      <None Include="Assets\Resources\Levels\level2-24.txt" />
-     <None Include="Assets\Resources\Levels\level2-6.txt" />
-     <None Include="Assets\Resources\Levels\level3-21.txt" />
-     <None Include="Assets\Resources\Levels\level3-22.txt" />
-     <None Include="Assets\Resources\Levels\level3-1.txt" />
-     <None Include="Assets\Resources\Levels\level2-1.txt" />
-     <None Include="Assets\Resources\Levels\level3-24.txt" />
-     <None Include="Assets\Resources\Levels\level2-17.txt" />
-     <None Include="Assets\Resources\Levels\level2-2.txt" />
+     <None Include="Assets\Resources\Levels\47.txt" />
+     <None Include="Assets\Resources\Levels\49.txt" />
+     <None Include="Assets\Resources\Levels\6.txt" />
+     <None Include="Assets\Resources\Levels\50.txt" />
+     <None Include="Assets\Resources\Levels\23.txt" />
+     <None Include="Assets\Resources\Levels\28.txt" />
+     <None Include="Assets\Resources\Levels\26.txt" />
+     <None Include="Assets\Resources\Levels\46.txt" />
+     <None Include="Assets\Resources\Levels\3.txt" />
      <None Include="Assets\Resources\Levels\level2-23.txt" />
-     <None Include="Assets\Resources\Levels\level3-2.txt" />
-     <None Include="Assets\Resources\Levels\level3-7.txt" />
-     <None Include="Assets\Resources\Levels\level3-16.txt" />
-     <None Include="Assets\Resources\Levels\level3-8.txt" />
-     <None Include="Assets\Resources\Levels\level2-19.txt" />
-     <None Include="Assets\Resources\Levels\level3-5.txt" />
-     <None Include="Assets\Resources\Levels\level2-21.txt" />
-     <None Include="Assets\Resources\Levels\level2-5.txt" />
-     <None Include="Assets\Resources\Levels\level2-18.txt" />
-     <None Include="Assets\Resources\Levels\level3-12.txt" />
+     <None Include="Assets\Resources\Levels\29.txt" />
+     <None Include="Assets\Resources\Levels\25.txt" />
+     <None Include="Assets\Resources\Levels\24.txt" />
+     <None Include="Assets\Resources\Levels\27.txt" />
+     <None Include="Assets\Resources\Levels\4.txt" />
+     <None Include="Assets\Resources\Levels\30.txt" />
  <Reference Include="UnityEngine.UI">
- <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.2/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

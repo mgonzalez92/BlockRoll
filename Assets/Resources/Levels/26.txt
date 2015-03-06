@@ -1,0 +1,6 @@
+4 3
+xxxx.xex.xxxx
+.xxxxxxxxxxx.
+..xxxxsxxxx..
+.xxxxx.xxxxx.
+xxxx.xxx.xxxx

@@ -1,0 +1,6 @@
+8 3
+sx.xxx.x
+.x.xxxxe
+...xxx.x
+.x.x.x.x
+.x.xxx.x

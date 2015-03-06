@@ -1,0 +1,6 @@
+22 2
+......xxxxxxx..
+xxxx..xxx..xx..
+xxxxxxxxx..xxxx
+xsxx.......xxex
+xxxx........xxx

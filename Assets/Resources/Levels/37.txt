@@ -1,0 +1,6 @@
+16 3
+xxx.......xxx
+.............
+xxxxx...xxxxx
+.xxxxxxxxxxx.
+..xxxsxexxxx.

@@ -1,0 +1,10 @@
+16 3
+sx.........
+xx.xx......
+xx.xx.xx...
+xx.xx.xx.xx
+xx.xx.xx.xx
+xx.xx.xx.xx
+...xx.xx.xx
+......xx.xx
+.........xe

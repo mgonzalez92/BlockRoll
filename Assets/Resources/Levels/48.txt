@@ -1,0 +1,11 @@
+22 3
+sx.xxx.xxx.xx
+...xxx.xxx.xx
+.............
+x..xxx.xxx.xx
+xx.x.x.x.x.xx
+xx.xxx.xxx.xx
+.............
+x...x.......x
+xx.xxx.xex.xx
+x...x...x...x

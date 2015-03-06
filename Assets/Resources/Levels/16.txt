@@ -1,0 +1,7 @@
+12 2
+.xxx..
+sxxx..
+..xxxx
+..xxxx
+....xx
+....e.

@@ -5,7 +5,8 @@ public class PlayerController : MonoBehaviour {
 
 	// Rotation information
 	public float speed;
-	private const float SPEED = 400;
+	private const float SPEED = 425;
+	private const float FALLSPEED = 0.75f; //1.04f;
 	private float rotation = 0;
 	public bool isRotating = false;
 	public bool isArrived = false;
@@ -34,23 +35,23 @@ public class PlayerController : MonoBehaviour {
 
 	void Update () {
 	}
-	
+
 	// Update is called once per frame
 	public void PlayerUpdate () {
 		// Arrow pad
 		float moveX = Input.GetAxis ("Horizontal");
 		float moveY = Input.GetAxis ("Vertical");
-
+		
 		// Touch pad
 		if (Input.touchCount > 0) {
 			Vector2 touchPos = Input.GetTouch(0).position;
 			if (Input.GetTouch(0).phase == TouchPhase.Began) {
 				touchStart = touchPos;
 			} else if (Input.GetTouch(0).phase == TouchPhase.Ended && touchStart != Vector2.zero &&
-			         Vector2.Distance(touchStart, touchPos) > THRESHOLD) {
+			           Vector2.Distance(touchStart, touchPos) > THRESHOLD) {
 				float angle = Vector2.Angle (Vector2.right, touchPos-touchStart);
 				if (touchPos.y < touchStart.y) angle = 360 - angle;
-
+				
 				// Determine direction swiped
 				if (angle >= 60 && angle < 150)
 					moveY = 1;
@@ -60,23 +61,23 @@ public class PlayerController : MonoBehaviour {
 					moveY = -1;
 				else
 					moveX = 1;
-
+				
 				touchStart = touchPos;
 			}
 		}
-
+		
 		if (isRotating) {
 			Rotate ();
 		} else if (isFalling == 0) {
-			fall += 0.8f;
+			fall += FALLSPEED;
 			transform.Translate(new Vector3(0, -fall * Time.deltaTime, 0), Space.World);
 			isArrived = false;
 		} else if (isFalling == 1) {
-			fall += 0.8f;
+			fall += FALLSPEED;
 			transform.FindChild("Cube1").transform.Translate(new Vector3(0, -fall * Time.deltaTime, 0), Space.World);
 			isArrived = false;
 		} else if (isFalling == 2) {
-			fall += 0.8f;
+			fall += FALLSPEED;
 			transform.FindChild("Cube2").transform.Translate(new Vector3(0, -fall * Time.deltaTime, 0), Space.World);
 			isArrived = false;
 		} else {
@@ -91,16 +92,16 @@ public class PlayerController : MonoBehaviour {
 			}
 			isArrived = false;
 		}
-
+		
 		prevX = moveX;
 		prevY = moveY;
 	}
-
+	
 	void Move(int direction) {
 		float focusX = 0.5f;
 		float focusY = 0.5f;
 		float focusZ = 0.5f;
-
+		
 		// Long block
 		if (type == 2) {
 			// Straight up
@@ -237,8 +238,10 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		isRotating = true;
+		fall = 0;
+		Rotate ();
 	}
-
+	
 	void Rotate() {
 		float theta = SPEED * Time.deltaTime;
 		rotation += theta;
